@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>后台管理系统</title>
+    <!-- 引入Bootstrap的CSS -->
+    <!-- 引入Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 100px;
+            margin-left: 0px;
+
+        }
+
+        .nav-item.dropdown.show .dropdown-menu {
+            display: block;
+            position: static;
+            margin-top: 0;
+        }
+
+        .navbar {
+
+            margin-left: 0px;
+            padding-left: 0px;
+            width: 160px;
+        }
+
+        .navbar-brand {
+            display: none;
+        }
+
+        .content-div {
+            position: absolute;
+            top: 50px;
+            /* Adjust this value to change the position of the divs */
+            left: 300px;
+            transform: translateX(-50%);
+            display: none;
+
+
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+    <script src="echarts.js"></script>
+    <script src="china.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container" style="z-index: 99;">
+        <div class="row">
+            <div class="col-md-3">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-left">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav flex-column">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    学生管理
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
+                                    <a class="dropdown-item item1" href="#" data-target="content-1">显示学生信息</a>
+                                    <a class="dropdown-item item1" href="#" data-target="content-2">修改信息</a>
+                                    <a class="dropdown-item item1" href="#" data-target="content-3">录入信息</a>
+                                    <a class="dropdown-item item1" href="#" data-target="content-4">注册情况</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    任务管理
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown2">
+                                    <a class="dropdown-item item1 " href="#" data-target="content-5">发布任务</a>
+                                    <a class="dropdown-item item1" href="#" data-target="content-6">修改任务</a>
+                                    <a class="dropdown-item item1" href="#" data-target="content-7">删除任务</a>
+                                    <a class="dropdown-item item1" href="#" data-target="content-8">统计任务</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    广告管理
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown3">
+                                    <a class="dropdown-item item1" href="#" data-target="content-9">增加广告</a>
+                                    <a class="dropdown-item item1" href="#" data-target="content-10">删除广告</a>
+                                    <a class="dropdown-item item1" href="#" data-target="content-11">统计广告</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown4" role="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    物品管理
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown3">
+                                    <a class="dropdown-item item1" href="#" data-target="content-12">增加物品</a>
+                                    <a class="dropdown-item item1" href="#" data-target="content-13">删除物品</a>
+                                    <a class="dropdown-item item1" href="#" data-target="content-14">更新物品</a>
+                                    <a class="dropdown-item item1" href="#" data-target="content-15">兑换物品</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div id="content-1" class="content-div" style="left: 1000px;"><!-- 显示学生信息 -->
+        <div style="margin-left: 0px;left: -500px;transform: translateX(-300px);"><!-- 显示学生信息的图表 -->
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" style="transform: translateX(0px);">
+                <li class="nav-item" role="presentation">
+
+                    <button class="nav-link active" id="pills-home-tab" data-toggle="pill" data-target="#pills-home"
+                        type="button" role="tab" aria-controls="pills-home" aria-selected="true">生源地</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-profile-tab" data-toggle="pill" data-target="#pills-profile"
+                        type="button" role="tab" aria-controls="pills-profile" aria-selected="false">学院比例</button>
+                </li>
+                <!-- <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-contact-tab" data-toggle="pill" data-target="#pills-contact"
+                        type="button" role="tab" aria-controls="pills-contact" aria-selected="false">学生积分</button>
+                </li> -->
+            </ul>
+            <div id="pills-home" style="display: none;">
+                <div id="map" style="width: 1000px;height: 600px;"></div>
+            </div>
+            <div id="pills-profile" style="display: none;">
+                <div id="pie" style="width: 1000px;height:600px;"></div>
+            </div>
+            <div id="pills-contact" style="display: none;">
+                <div id="bar" style="width: 1000px;height:600px;"></div>
+            </div>
+        </div>
+        <div style="margin-left: 0px;left: 0px;transform: translateX(-300px);">
+            <table id="studentTable" class="table" style="margin-left: 0px;overflow:auto;max-height: 400px;">
+                <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>学号</th>
+                        <th>电话</th>
+                        <th>班级</th>
+                        <th>生源地</th>
+                        <th>是否注册</th>
+                        <th>身份证号码</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 表格的行将在这里动态生成 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="content-2" class="content-div" style="left: 600px;"><!-- 修改指定的学生的信息 -->
+        <form id="search-form">
+            <label for="student-id">学号</label>
+            <input type="text" id="student-id" name="student-id" style="left: 30px;">
+            <button type="submit" id="searchStudent">查询</button>
+        </form>
+
+        <form id="student-info">
+            <div class="input-group mb-3">
+                <span class="input-group-text">姓名</span>
+                <input type="text" id="info-name" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">学号</span>
+                <input type="text" id="info-id" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">电话</span>
+                <input type="text" id="info-phone" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">班级</span>
+                <input type="text" id="info-class" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">是否注册</span>
+                <input type="text" id="info-isRegister" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">生源地</span>
+                <input type="text" id="info-place" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">身份证号码</span>
+                <input type="text" id="info-idcard" class="form-control">
+            </div>
+
+            <button id="modify-button" type="submit">修改</button>
+        </form>
+    </div>
+    <div id="content-3" class="content-div "><!-- 批量导入 -->
+        <div class="content-div d-flex justify-content-center align-items-center" style="height: 200px;width: 200px;">
+            <input type="file" id="file-input" style="display: none;">
+            <button type="button" class="btn btn-primary btn-lg" id="upload-button">上传文件</button>
+        </div>
+    </div>
+    <div id="content-4" class="content-div" style="left: 600px;"><!-- 注册情况 -->
+        <div id="registration-chart" style="width: 600px;height:400px;"></div>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-bottom: 100px;">
+                切换表格
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="width:50px !important;">
+                <a href="#" onclick="showTable('registered', event)">已注册</a><br>
+                <a href="#" onclick="showTable('unregistered', event)">未注册</a><br>
+            </div>
+        </div>
+        <table class="table" id="student-table">
+            <thead>
+                <tr>
+                    <th scope="col">姓名</th>
+                    <th scope="col">学号</th>
+                    <th scope="col">电话</th>
+                </tr>
+            </thead>
+            <tbody id="student-table-body">
+            </tbody>
+        </table>
+    </div>
+    <div id="content-5" class="content-div" style="left: 600px;"><!-- 发布任务 -->
+        <form id="task-info">
+            <div class="input-group mb-3">
+                <span class="input-group-text">名字</span>
+                <input type="text" id="task-name" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">简介</span>
+                <input type="text" id="task-description" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">发布对象</span>
+                <select id="task-target" class="form-control">
+                    <!-- 这里的选项需要从后端获取 -->
+                </select>
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">积分</span>
+                <input type="text" id="task-score" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">截止日期</span>
+                <input type="date" id="task-deadline" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">类型</span>
+                <select id="task-type" class="form-control">
+                    <option value="video">打卡</option>
+                    <option value="photo">拍照</option>
+                    <option value="face">人脸识别</option>
+                </select>
+            </div>
+
+            <button id="submit-button" type="submit">提交</button>
+        </form>
+    </div>
+    <div id="content-6" class="content-div" style="left: 600px;"><!-- 修改任务 -->
+        <table id="task-table" class="table">
+            <thead>
+                <tr>
+                    <th>名字</th>
+                    <th>简介</th>
+                    <th>发布对象</th>
+                    <th>积分</th>
+                    <th>截止日期</th>
+                    <th>类型</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 这里的行需要从后端获取 -->
+            </tbody>
+        </table>
+
+        <!-- 修改任务表单 -->
+        <form id="modify-task-form" style="display: none;">
+            <div class="form-group">
+                <label for="modify-task-name">名字</label>
+                <input id="modify-task-name" type="text">
+            </div>
+            <div class="form-group">
+                <label for="modify-task-description">简介</label>
+                <input id="modify-task-description" type="text">
+            </div>
+            <div class="form-group">
+                <label for="modify-task-target">发布对象</label>
+                <input id="modify-task-target" type="text">
+            </div>
+            <div class="form-group">
+                <label for="modify-task-score">积分</label>
+                <input id="modify-task-score" type="text">
+            </div>
+            <div class="form-group">
+                <label for="modify-task-deadline">截止日期</label>
+                <input id="modify-task-deadline" type="text">
+            </div>
+            <div class="form-group">
+                <label for="modify-task-type">类型</label>
+                <input id="modify-task-type" type="text">
+            </div>
+            <input type="submit" value="提交">
+        </form>
+    </div>
+    <div id="content-7" class="content-div" style="left: 600px;"><!-- 删除任务 -->
+        <button id="filter-button" style="float: right;">筛选</button>
+        <input id="search-input" type="text" style="float: left;">
+        <button id="search-button" style="float: left;">搜索</button>
+        <table id="task-table" class="table">
+            <thead>
+                <tr>
+                    <th>名字</th>
+                    <th>简介</th>
+                    <th>发布对象</th>
+                    <th>积分</th>
+                    <th>截止日期</th>
+                    <th>类型</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="task-table-body">
+                <!-- 这里的行需要从后端获取 -->
+                <!-- 示例行 -->
+                <tr>
+                    <td>任务名</td>
+                    <td>任务简介</td>
+                    <td>发布对象</td>
+                    <td>积分</td>
+                    <td>截止日期</td>
+                    <td>类型</td>
+                    <td><button class="delete-button">删除</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="content-8" class="content-div" style="left: 600px;"><!-- 任务统计 -->
+
+        <canvas id="bar-chart" width="400" height="400"></canvas>
+        <canvas id="pie-chart2" width="400" height="400"></canvas>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                选择图表
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" ">
+                <a class=" dropdown-item" href="#" data-target="bar-chart" id="showBar">柱状图</a>
+                <a class="dropdown-item" href="#" data-target="pie-chart2" id="showPie">饼图</a>
+            </div>
+        </div>
+        <table id="task-table">
+            <tr>
+                <th>任务名</th>
+                <th>类型</th>
+                <th>完成人数</th>
+                <th>完成率</th>
+            </tr>
+            </thead>
+            <tbody id="task-table-body">
+            </tbody>
+        </table>
+    </div>
+    <div id="content-9" class="content-div" style="left: 600px;"><!-- 增加广告 -->
+        <form id="ad-info">
+            <div class="input-group mb-3">
+                <span class="input-group-text">广告名字</span>
+                <input type="text" id="ad-name" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">上传图片</span>
+                <input type="file" id="ad-image" class="form-control" accept="image/*">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">跳转链接</span>
+                <input type="text" id="ad-jumpurl" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <img id="image-preview" src="#" alt="Image Preview" style="display: none; width: 200px; height: auto;">
+            </div>
+            <button id="submit-button" type="submit">提交</button>
+        </form>
+    </div>
+    <div id="content-10" class="content-div" style="left: 600px;"><!-- 删除广告 -->
+        <div style="height: 600px; overflow: auto;">
+            <table id="ad-table" class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">名字</th>
+                        <th scope="col">缩略图</th>
+                        <th scope="col">展示事件</th>
+                        <th scope="col">点击次数</th>
+                        <th scope="col">删除</th>
+                    </tr>
+                </thead>
+                <tbody id="ad-table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="content-11" class="content-div" style="left: 600px;">
+        <div id="display-event-chart" style="width: 400px;height:400px;"></div>
+        <div id="click-count-chart" style="width: 400px;height:400px;"></div>
+        <button id="toggle-chart">切换图表</button>
+        <table id="ad-table">
+            <tr>
+                <th>名字</th>
+                <th>缩略图</th>
+                <th>展示事件</th>
+                <th>点击次数</th>
+            </tr>
+            <tbody id="show-ad-table-body">
+            </tbody>
+        </table>
+    </div>
+    <div id="content-12" class="content-div" style="left:600px;"><!--增加物品-->
+        <form id="product-info">
+            <div class="input-group mb-3">
+                <span class="input-group-text">物品名字</span>
+                <input type="text" id="product-name" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">上传图片</span>
+                <input type="file" id="product-photo" class="form-control" accept="image/*">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">简介</span>
+                <input type="text" id="product-introduction" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">积分</span>
+                <input type="text" id="product-point" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <img id="image-preview" src="#" alt="Image Preview" style="display: none; width: 200px; height: auto;">
+            </div>
+            <button id="submit-button" type="submit">提交</button>
+        </form>
+    </div>
+    <div id="content-13" class="content-div" style="left:600px;"><!--删除物品-->
+        <div style="height: 600px; overflow: auto;">
+            <table id="product-table" class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">名字</th>
+                        <th scope="col">缩略图</th>
+                        <th scope="col">积分</th>
+                        <th scope="col">删除</th>
+                    </tr>
+                </thead>
+                <tbody id="product-table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="content-14" class="content-div" style="left:600px;"><!--修改物品-->
+        <form id="product-info-update">
+            <div class="input-group mb-3">
+                <span class="input-group-text">物品名字</span>
+                <input type="text" id="product-name-update" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">上传图片</span>
+                <input type="file" id="product-photo-update" class="form-control" accept="image/*">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">简介</span>
+                <input type="text" id="product-introduction-update" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">积分</span>
+                <input type="text" id="product-point-update" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <img id="image-preview" src="#" alt="Image Preview" style="display: none; width: 200px; height: auto;">
+            </div>
+            <button id="submit-button" type="submit">提交</button>
+        </form>
+    </div>
+    <div id="content-15" class="content-div" style="left:600px;"><!--兑换物品-->
+        <form id="product-info-exchange">
+            <div class="input-group mb-3">
+                <span class="input-group-text">兑换码</span>
+                <input type="text" id="product-name-exchange" class="form-control">
+            </div>
+            <button id="submit-button" type="submit">提交</button>
+        </form>
+    </div>
+    <script>//导航栏设置
+        var dropdownItems = document.querySelectorAll(' .item1');
+        var contentDivs = document.querySelectorAll('.content-div');
+
+        dropdownItems.forEach(function (item) {
+            item.addEventListener('click', function () {
+                contentDivs.forEach(function (div) {
+                    div.style.display = 'none';
+                });
+                var targetDivId = item.getAttribute('data-target');
+                document.getElementById(targetDivId).style.display = 'block';
+            });
+        });
+    </script>
+    <script>//显示学生数据的图表
+        $(document).ready(function () {
+            // 默认显示第一个盒子
+            $("#pills-home").css("display", "block");
+
+            // 当点击对应的按钮时，显示对应的盒子并隐藏其他盒子
+            $("#pills-home-tab").click(function () {
+                $("#pills-home").css("display", "block");
+                $("#pills-profile").css("display", "none");
+                $("#pills-contact").css("display", "none");
+                console.log("home");
+            });
+            $("#pills-profile-tab").click(function () {
+                $("#pills-home").css("display", "none");
+                $("#pills-profile").css("display", "block");
+                $("#pills-contact").css("display", "none");
+            });
+            $("#pills-contact-tab").click(function () {
+                $("#pills-home").css("display", "none");
+                $("#pills-profile").css("display", "none");
+                $("#pills-contact").css("display", "block");
+            });
+        });
+        var mapChart = echarts.init(document.getElementById('map'));
+        var pieChart = echarts.init(document.getElementById('pie'));
+        var barChart = echarts.init(document.getElementById('bar'));
+
+        // 中国地图数据
+        var mapData = [
+            // 示例数据
+            { name: '北京', value: 200 },
+            { name: '上海', value: 300 },
+            // ...
+        ];
+
+        // 饼图数据
+        var pieData = [
+            // 示例数据
+            { value: 335, name: '学院1' },
+            { value: 310, name: '学院2' },
+            // ...
+        ];
+
+        // 柱状图数据
+        var barData = [
+            // 示例数据
+            { name: '0-5', value: 120 },
+            { name: '6-10', value: 200 },
+            { name: '11-15', value: 150 },
+            // ...
+        ];
+
+        var mapOption = {
+            title: {
+                text: '学生生源地分布',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            visualMap: {
+                min: 0,
+                max: 500,
+                left: 'left',
+                top: 'bottom',
+                text: ['高', '低'],
+                calculable: true
+            },
+            series: [
+                {
+                    name: '学生数',
+                    type: 'map',
+                    mapType: 'china',
+                    roam: false,
+                    data: mapData
+                }
+            ]
+        };
+
+        var pieOption = {
+            title: {
+                text: '学院比例',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b} : {c} ({d}%)'
+            },
+            series: [
+                {
+                    name: '学院',
+                    type: 'pie',
+                    radius: '55%',
+                    center: ['50%', '60%'],
+                    data: pieData,
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+
+        axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/studentGetByPoint')
+            .then(function (response) {
+                var studentData = response.data.data; // 获取学生数据
+
+                // 更新柱状图数据
+                var barData = studentData.map(student => {
+                    return {
+                        name: student.name,
+                        value: student.point // 假设每个学生数据中有一个point字段表示积分
+                    };
+                });
+
+                var barOption = {
+                    title: {
+                        text: '学生积分前三',
+                        left: 'center'
+                    },
+                    tooltip: {},
+                    xAxis: {
+                        data: barData.map(function (item) { return item.name; })
+                    },
+                    yAxis: {},
+                    series: [
+                        {
+                            name: '学生名称',
+                            type: 'bar',
+                            data: barData.map(function (item) { return item.value; })
+                        }
+                    ]
+                };
+                console.log(barData);
+                barChart.setOption(barOption); // 更新柱状图配置
+            })
+            .catch(function (error) {
+                console.log('请求失败: ' + error);
+            });
+        mapChart.setOption(mapOption);
+        pieChart.setOption(pieOption);
+    </script>
+    <script>//显示学生数据的表格
+        $(document).ready(function () {
+            axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/studentInfo')
+                .then(function (response) {
+                    var res = response.data;
+
+                    var students = res.data;
+                    for (var i = 0; i < students.length; i++) {
+                        var student = students[i];
+                        var tr = $('<tr></tr>');
+                        tr.append('<td>' + student.name + '</td>');
+                        tr.append('<td>' + student.id + '</td>');
+                        tr.append('<td>' + student.phone + '</td>');
+                        tr.append('<td>' + student.classes + '</td>');
+                        tr.append('<td>' + student.place + '</td>');
+                        tr.append('<td>' + (student.isRegister ? '已注册' : '未注册') + '</td>');
+                        tr.append('<td>' + student.idNum + '</td>');
+                        $('#studentTable tbody').append(tr);
+                    }
+
+                })
+                .catch(function (error) {
+                    console.log('请求失败: ' + error);
+                });
+        });
+    </script>
+    <script>//查询并修改学生数据
+
+        document.getElementById('search-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            var studentId = document.getElementById('student-id').value;
+
+            axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/studentGetById', {
+                params: {
+                    id: studentId
+                }
+            })
+                .then(function (response) {
+                    var data = response.data.data; // 注意这里，你的数据被包在了data属性下
+                    document.getElementById('info-name').value = data.name;
+                    document.getElementById('info-id').value = data.id;
+                    document.getElementById('info-phone').value = data.phone;
+                    document.getElementById('info-class').value = data.classes;
+                    document.getElementById('info-isRegister').value = data.isRegister;
+                    document.getElementById('info-place').value = data.place;
+                    document.getElementById('info-idcard').value = data.idNum;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        });
+
+        // 修改按钮点击事件
+        document.getElementById('student-info').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var studentInfo = {
+                name: document.getElementById('info-name').value,
+                id: document.getElementById('info-id').value,
+                phone: document.getElementById('info-phone').value,
+                classes: document.getElementById('info-class').value,
+                isRegister: document.getElementById('info-isRegister').value,
+                place: document.getElementById('info-place').value,
+                idNum: document.getElementById('info-idcard').value
+            };
+
+            axios.post('http://127.0.0.1:4523/m1/4172278-0-default/backend/studentUpdateById', studentInfo)
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        });
+    </script>
+    <script>//批量导入文件
+        document.getElementById('upload-button').addEventListener('click', function () {
+            document.getElementById('file-input').click();
+        });
+
+        document.getElementById('file-input').addEventListener('change', function () {
+            var file = this.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('http://127.0.0.1:4523/m1/4172278-0-default/backend/batchUpload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(function (response) {
+                    if (response.status === 200) {
+                        alert('文件上传成功');
+                    } else {
+                        throw new Error('HTTP error ' + response.status);
+                    }
+                })
+                .catch(function () {
+                    alert('文件上传失败');
+                });
+        });
+    </script>
+    <script>//注册情况
+        axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/studentGetByRegis')
+            .then(function (response) {
+                var allStudents = response.data.data;
+                var students = {
+                    registered: allStudents.filter(student => student.isRegister === 1),
+                    unregistered: allStudents.filter(student => student.isRegister === 0)
+                };
+
+                var chart = echarts.init(document.getElementById('registration-chart'));
+                chart.setOption({
+                    series: [{
+                        type: 'pie',
+                        data: [
+                            { value: students.registered.length, name: '已注册' },
+                            { value: students.unregistered.length, name: '未注册' }
+                        ]
+                    }]
+                });
+
+                function showTable(type) {
+                    var tbody = document.getElementById('student-table-body');
+                    tbody.innerHTML = '';
+                    for (var i = 0; i < students[type].length; i++) {
+                        var tr = document.createElement('tr');
+                        tr.innerHTML = '<td>' + students[type][i].name + '</td><td>' + students[type][i].id + '</td><td>' + students[type][i].phone + '</td>';
+                        tbody.appendChild(tr);
+                    }
+                }
+                showTable('registered');
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    </script>
+    <script>//发布任务
+        document.getElementById('task-info').addEventListener('submit', function (event) {
+            // 阻止表单的默认提交行为
+            event.preventDefault();
+
+            // 获取表单的内容
+            var name = document.getElementById('task-name').value;
+            var introduction = document.getElementById('task-description').value;
+            var classes = document.getElementById('task-target').value;
+            var point = document.getElementById('task-score').value;
+            var deadline = document.getElementById('task-deadline').value;
+            var type = document.getElementById('task-type').value;
+
+            // 创建一个任务对象
+            var task = {
+                name: name,
+                introduction: introduction,
+                deadline: deadline,
+                type: parseInt(type),
+                point: parseInt(point),
+                classes: classes
+            };
+
+            // 使用axios发送POST请求
+            axios.post('http://127.0.0.1:4523/m1/4172278-0-default/backend/taskUpload', task)
+                .then(function (response) {
+                    console.log(response.data);
+                    document.getElementById('task-name').value = '';
+                    document.getElementById('task-description').value = '';
+                    document.getElementById('task-target').value = '';
+                    document.getElementById('task-score').value = '';
+                    document.getElementById('task-deadline').value = '';
+                    document.getElementById('task-type').value = '';
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        });
+    </script>
+    <script>//修改任务
+        var tableBody = document.getElementById('task-table').getElementsByTagName('tbody')[0];
+
+        // 使用axios从后端获取数据
+        axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/taskInfo')
+            .then(function (response) {
+                var tasks = response.data.data;
+                for (var i = 0; i < tasks.length; i++) {
+                    var row = tableBody.insertRow();
+                    row.insertCell(0).textContent = tasks[i].name;
+                    row.insertCell(1).textContent = tasks[i].introduction;
+                    row.insertCell(2).textContent = tasks[i].classes;
+                    row.insertCell(3).textContent = tasks[i].point;
+                    row.insertCell(4).textContent = tasks[i].deadline;
+                    row.insertCell(5).textContent = tasks[i].type === 0 ? '视频' : '拍照';
+                    var modifyCell = row.insertCell(6);
+                    var modifyButton = document.createElement('button');
+                    modifyButton.textContent = '修改';
+                    modifyButton.classList.add('modify-button');
+                    modifyCell.appendChild(modifyButton);
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
+        document.getElementById('task-table').addEventListener('click', function (event) {
+            // 检查被点击的元素是否是修改按钮
+            if (event.target.classList.contains('modify-button')) {
+                // 获取对应行的数据
+                var row = event.target.parentNode.parentNode;
+                var name = row.cells[0].textContent;
+                var description = row.cells[1].textContent;
+                var target = row.cells[2].textContent;
+                var score = row.cells[3].textContent;
+                var deadline = row.cells[4].textContent;
+                var type = row.cells[5].textContent;
+
+                // 填充表单的输入字段
+                document.getElementById('modify-task-name').value = name;
+                document.getElementById('modify-task-description').value = description;
+                document.getElementById('modify-task-target').value = target;
+                document.getElementById('modify-task-score').value = score;
+                document.getElementById('modify-task-deadline').value = deadline;
+                document.getElementById('modify-task-type').value = type;
+
+                // 显示表单
+                document.getElementById('modify-task-form').style.display = 'block';
+
+                // 创建一个任务对象
+                var task = {
+                    name: name,
+                    introduction: description,
+                    deadline: deadline,
+                    type: type === '视频' ? 0 : 1, // 假设视频对应0，拍照对应1
+                    point: parseInt(score),
+                    classes: target,
+                    updateTime: new Date().toISOString() // 使用当前时间作为更新时间
+                };
+
+                // 使用axios发送PUT请求
+                axios.post('http://127.0.0.1:4523/m1/4172278-0-default/backend/updateTask', task)
+                    .then(function (response) {
+                        console.log(response.data);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+        });
+        document.getElementById('modify-task-form').addEventListener('submit', function (event) {
+            // 阻止表单的默认提交行为
+            event.preventDefault();
+
+            // 获取表单的输入字段
+            var name = document.getElementById('modify-task-name').value;
+            var description = document.getElementById('modify-task-description').value;
+            var target = document.getElementById('modify-task-target').value;
+            var score = document.getElementById('modify-task-score').value;
+            var deadline = document.getElementById('modify-task-deadline').value;
+            var type = document.getElementById('modify-task-type').value;
+
+            // 创建一个任务对象
+            var task = {
+                name: name,
+                introduction: description,
+                deadline: deadline,
+                type: type === '视频' ? 0 : 1, // 假设视频对应0，拍照对应1
+                point: parseInt(score),
+                classes: target,
+                updateTime: new Date().toISOString() // 使用当前时间作为更新时间
+            };
+
+            // 使用axios发送POST请求
+            axios.post('http://127.0.0.1:4523/m1/4172278-0-default/backend/updateTask', task)
+                .then(function (response) {
+                    console.log(response.data);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        });
+
+    </script>
+    <script>//删除任务
+        var tasks = [];
+
+        function showTable() {
+            var tbody = document.getElementById('task-table-body');
+            tbody.innerHTML = '';
+            var tr = document.createElement('tr');
+            tr.innerHTML = `<td>${task.name}</td><td>${task.introduction}</td><td>${task.classes}</td><td>${task.point}</td><td>${task.deadline}</td><td>${task.type}</td><td><button class="delete-button" onclick="deleteTask('${task.name}')">删除</button></td>`;
+            tbody.appendChild(tr);
+
+        }
+
+        function getTasks() {
+            axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/taskGetByName')
+                .then(function (response) {
+                    if (response.data.data) {
+                        tasks = [response.data.data];
+                    } else {
+                        tasks = [];
+                    }
+                    showTable();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+
+        getTasks();
+        // 获取所有的删除按钮
+        var deleteButtons = document.getElementsByClassName('delete-button');
+        for (var i = 0; i < deleteButtons.length; i++) {
+            // 为每个删除按钮添加点击事件监听器
+            deleteButtons[i].addEventListener('click', function () {
+                // 获取要删除的任务的 ID
+                var id = this.dataset.id;
+                // 使用axios发送DELETE请求
+                axios.post('http://127.0.0.1:4523/m1/4172278-0-default/backend/deleteTask', {
+                    data: {
+                        id: id
+                    }
+                })
+                    .then(response => {
+                        if (response.status === 200) {
+                            // 删除这个按钮的父元素的父元素，也就是这个按钮所在的行
+                            this.parentElement.parentElement.remove();
+                            alert('删除成功');
+                        } else {
+                            alert('删除失败');
+                        }
+                    });
+            });
+        }
+
+        // 处理筛选按钮的点击事件
+        document.getElementById('filter-button').addEventListener('click', function () {
+            var filterMenu = document.createElement('select');
+            // 这里的选项需要从后端获取
+            var options = ['类型1', '类型2', '类型3'];
+            for (var i = 0; i < options.length; i++) {
+                var option = document.createElement('option');
+                option.textContent = options[i];
+                option.addEventListener('click', function () {
+                    searchTasks(this.textContent);
+                });
+                filterMenu.appendChild(option);
+            }
+            this.parentElement.appendChild(filterMenu);
+        });
+
+        // 处理搜索按钮的点击事件
+        function searchTasks(name) {
+            axios.get(`http://127.0.0.1:4523/m1/4172278-0-default/backend/taskGetByName?name=${name}`)
+                .then(response => {
+                    if (response.data.data) {
+                        tasks = [response.data.data];
+                    } else {
+                        tasks = [];
+                    }
+                    showTable();
+                });
+        }
+
+        document.getElementById('search-button').addEventListener('click', function () {
+            var name = document.getElementById('search-input').value;
+            searchTasks(name);
+        });
+    </script>
+    <script>//展示任务
+        var data = [
+            { name: '任务1', type: '类型1', completed: 10, completionRate: 0.5 },
+            { name: '任务2', type: '类型2', completed: 20, completionRate: 0.8 },
+            { name: '任务3', type: '类型1', completed: 30, completionRate: 0.6 },
+            { name: '任务4', type: '类型3', completed: 40, completionRate: 0.7 },
+            { name: '任务5', type: '类型2', completed: 50, completionRate: 0.9 }
+        ];
+
+        // 基于准备好的dom，初始化echarts实例
+        var barChart = echarts.init(document.getElementById('bar-chart'));
+        var pieChart = echarts.init(document.getElementById('pie-chart2'));
+
+        // 指定图表的配置项和数据
+        var barOption = {
+            title: {
+                text: '任务完成率'
+            },
+            tooltip: {},
+            xAxis: {
+                data: data.map(task => task.name)
+            },
+            yAxis: {},
+            series: [{
+                name: '完成率',
+                type: 'bar',
+                data: data.map(task => task.completionRate)
+            }]
+        };
+        axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/taskType')
+            .then(function (response) {
+                var res = response.data;
+
+                var taskData = res.data;
+                var pieOption = {
+                    title: {
+                        text: '任务类型比例',
+                        left: 'center'
+                    },
+                    series: [{
+                        name: '任务类型',
+                        type: 'pie',
+                        radius: '50%',
+                        data: Object.keys(taskData).map(key => {
+                            return {
+                                value: taskData[key],
+                                name: key
+                            };
+                        })
+                    }]
+                };
+                // 使用刚指定的配置项和数据显示图表。
+                pieChart.setOption(pieOption);
+
+            })
+            .catch(function (error) {
+                console.log('请求失败: ' + error);
+            });
+
+
+        // 使用刚指定的配置项和数据显示图表。
+        barChart.setOption(barOption);
+
+        // 默认隐藏饼图
+        document.getElementById('pie-chart2').style.display = 'none';
+
+        // 为下拉菜单项添加点击事件监听器
+        var dropdownItems = document.getElementsByClassName('dropdown-item');
+        var showBar = document.getElementById('showBar');
+        for (var i = 0; i < dropdownItems.length; i++) {
+            dropdownItems[i].addEventListener('click', function (event) {
+                // 阻止链接的默认行为
+                event.preventDefault();
+                // 隐藏所有的图表
+                document.getElementById('bar-chart').style.display = 'none';
+                document.getElementById('pie-chart2').style.display = 'none';
+                // 显示选中的图表
+                document.getElementById(this.dataset.target).style.display = 'block';
+            });
+        }
+
+        // 创建表格
+        function showTable() {
+            var tbody = document.getElementById('task-table-body');
+            tbody.innerHTML = '';
+            for (var i = 0; i < tasks.length; i++) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = `<td>${tasks[i].name}</td><td>${tasks[i].type}</td><td>${tasks[i].completed}</td><td>${(tasks[i].completionRate * 100).toFixed(2)}%</td>`;
+                tbody.appendChild(tr);
+            }
+        }
+        showTable();
+    </script>
+    <script>//增加广告
+        document.getElementById('ad-image').addEventListener('change', function (e) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                document.getElementById('image-preview').style.display = 'block';
+                document.getElementById('image-preview').src = event.target.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        });
+
+        document.getElementById('ad-info').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var formData = new FormData();
+            formData.append('name', document.getElementById('ad-name').value);
+            formData.append('image', document.getElementById('ad-image').files[0]);
+            formData.append('jumpurl', document.getElementById('ad-jumpurl').value);
+
+            axios.post('http://127.0.0.1:4523/m1/4172278-0-default/backend/uploadAd', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(function (response) {
+                console.log(response);
+            }).catch(function (error) {
+                console.log(error);
+            });
+        });
+    </script>
+    <script>//删除广告
+        var ads = [];
+
+        function showTable() {
+            var tbody = document.getElementById('ad-table-body');
+            tbody.innerHTML = '';
+            for (var i = 0; i < ads.length; i++) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = `<td>${ads[i].name}</td><td><img src="${ads[i].thumbnail}" width="50" height="50"></td><td>${ads[i].displayEvent}</td><td>${ads[i].clickCount}</td><td><button onclick="deleteAd('${ads[i].name}')">删除</button></td>`;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function deleteAd(adName) {
+            axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/deleteAdByName', {
+                params: {
+                    adName: adName
+                }
+            })
+                .then(function (response) {
+                    // 重新获取广告数据
+                    getAds();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+        function getAds() {
+            // 使用axios从后端获取广告数据
+            axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/getAd')
+                .then(function (response) {
+                    ads = response.data;
+                    showTable();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+        getAds();
+        showTable();
+    </script>
+    <script>//广告统计
+        var ads = [];
+
+        var displayEventChart = echarts.init(document.getElementById('display-event-chart'));
+        var clickCountChart = echarts.init(document.getElementById('click-count-chart'));
+
+        function showTable() {
+            var tbody = document.getElementById('show-ad-table-body');
+            tbody.innerHTML = '';
+            for (var i = 0; i < ads.length; i++) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = `<td>${ads[i].name}</td><td><img src="${ads[i].url}" width="50" height="50"></td><td>${ads[i].jumpurl}</td><td>${ads[i].click}</td><td><button onclick="deleteAd('${ads[i].name}')">删除</button></td>`;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function showCharts() {
+            var displayEventOption = {
+                title: { text: '展示事件' },
+                tooltip: {},
+                xAxis: { data: ads.map(ad => ad.name) },
+                yAxis: {},
+                series: [{ name: '展示事件', type: 'bar', data: ads.map(ad => ad.jumpurl) }]
+            };
+            displayEventChart.setOption(displayEventOption);
+
+            var clickCountOption = {
+                title: { text: '点击次数' },
+                tooltip: {},
+                xAxis: { data: ads.map(ad => ad.name) },
+                yAxis: {},
+                series: [{ name: '点击次数', type: 'bar', data: ads.map(ad => ad.click) }]
+            };
+            clickCountChart.setOption(clickCountOption);
+        }
+
+        document.getElementById('toggle-chart').addEventListener('click', function () {
+            var displayEventChartDiv = document.getElementById('display-event-chart');
+            var clickCountChartDiv = document.getElementById('click-count-chart');
+            if (displayEventChartDiv.style.display !== 'none') {
+                displayEventChartDiv.style.display = 'none';
+                clickCountChartDiv.style.display = 'block';
+            } else {
+                displayEventChartDiv.style.display = 'block';
+                clickCountChartDiv.style.display = 'none';
+            }
+        });
+
+        function getAds() {
+            // 使用axios从后端获取广告数据
+            axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/getAd')
+                .then(function (response) {
+                    ads = response.data.data;
+                    showTable();
+                    showCharts();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+        getAds();
+        document.getElementById('display-event-chart').style.display = 'none';
+    </script>
+    <script>//增加物品
+        document.getElementById('product-info').addEventListener('submit', function (event) {
+            event.preventDefault(); // 阻止表单的默认提交行为
+
+            var productName = document.getElementById('product-name').value;
+            var productIntroduction = document.getElementById('product-introduction').value;
+            var productPoint = document.getElementById('product-point').value;
+
+            // 读取文件并转换为 Base64 格式
+            var productPhoto = document.getElementById('product-photo').files[0];
+            var reader = new FileReader();
+            reader.readAsDataURL(productPhoto);
+            reader.onloadend = function () {
+                var base64data = reader.result;
+
+                // 发送 POST 请求
+                axios.post('http://127.0.0.1:4523/m1/4172278-0-default/backend/uploadProduct', {
+                    name: productName,
+                    introduction: productIntroduction,
+                    photo: base64data,
+                    point: productPoint
+                })
+                    .then(function (response) {
+                        console.log(response.data);
+                        alert('提交成功');
+                        // 清空表单
+                        document.getElementById('product-info').reset();
+                    })
+                    .catch(function (error) {
+                        console.error('Error:', error);
+                    });
+            };
+        });
+    </script>
+    <script>//删除物品
+        var products = [];
+
+        function showTable() {
+            var tbody = document.getElementById('product-table-body');
+            tbody.innerHTML = '';
+            for (var i = 0; i < products.length; i++) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = `<td>${products[i].name}</td><td><img src="${products[i].photo}" width="50" height="50"></td><td>${products[i].point}</td><td><button onclick="deleteProduct('${products[i].name}')">删除</button></td>`;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function deleteProduct(productName) {
+            axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/deleteProduct', {
+                params: {
+                    name: productName
+                }
+            })
+                .then(function (response) {
+                    // 重新获取物品数据
+                    showProducts();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+        function showProducts() {
+            // 使用axios从后端获取物品数据
+            axios.get('http://127.0.0.1:4523/m1/4172278-0-default/backend/showProduct')
+                .then(function (response) {
+                    products = response.data.data;
+                    showTable();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+
+        showProducts();
+    </script>
+    <script>//修改物品
+        document.getElementById('product-info-update').addEventListener('submit', function (event) {
+            event.preventDefault(); // 阻止表单的默认提交行为
+
+            var productName = document.getElementById('product-name-update').value;
+            var productIntroduction = document.getElementById('product-introduction-update').value;
+            var productPoint = document.getElementById('product-point-update').value;
+
+            // 读取文件并转换为 Base64 格式
+            var productPhoto = document.getElementById('product-photo-update').files;
+            if (productPhoto.length === 0) {
+                console.error('No file selected!');
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.readAsDataURL(productPhoto[0]);
+            reader.onloadend = function () {
+                var base64data = reader.result;
+
+                // 发送 POST 请求
+                axios.post('http://127.0.0.1:4523/m1/4172278-0-default/backend/updateProduct', {
+                    name: productName,
+                    introduction: productIntroduction,
+                    photo: base64data,
+                    point: productPoint
+                })
+                    .then(function (response) {
+                        console.log(response.data);
+                        alert('提交成功');
+                    })
+                    .catch(function (error) {
+                        console.error('Error:', error);
+                    });
+            };
+        });
+    </script>
+    <script>//兑换物品
+        document.getElementById('product-info-exchange').addEventListener('submit', function (event) {
+            event.preventDefault(); // 阻止表单的默认提交行为
+
+            var exchangeCode = document.getElementById('product-name-exchange').value;
+
+            // 发送 POST 请求
+            axios.post('http://127.0.0.1:4523/m1/4172278-0-default/backend/exchangeProduct', {
+                code: exchangeCode
+            })
+                .then(function (response) {
+                    console.log(response.data);
+                    alert('提交成功');
+                })
+                .catch(function (error) {
+                    console.error('Error:', error);
+                    alert('提交失败');
+                });
+        });
+    </script>
+    <!-- 引入Bootstrap的JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

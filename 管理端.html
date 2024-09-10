@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>‘
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <script src="echarts.js"></script>
+    <script src="china.js"></script>
+    <style>
+        #page1 {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chartButton-container {
+            width: 45%;
+            height: 650px;
+            margin: 10px;
+            float: left;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 600px;
+            margin: 10px;
+        }
+
+
+        .chartButton-container importButton {
+            display: block;
+            margin: 0 auto;
+        }
+
+        #studentChart,
+        #taskChart,
+        #collegeChart {
+            width: 500px;
+            height: 400px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+
+<body>
+    <div class="btn-group">
+        <a href="#" class="btn btn-primary active" aria-current="page" onclick="toggleActive(1)">学生管理</a>
+        <a href="#" class="btn btn-primary" id="showPage2Button" onclick="toggleActive(2)">任务管理</a>
+        <a href="#" class="btn btn-primary" id="showPage3Button" onclick="toggleActive(3)">广告管理</a>
+        <a href="#" class="btn btn-primary" id="showPage4Button" onclick="toggleActive(4)">数据管理</a>
+    </div>
+    <button id="backToTop" class="btn btn-success"
+        style="display: none; position: fixed; top: 10px; right: 10px;">回到顶部</button>
+    <div id="page1" style="display: block;">
+        <div class="chartButton-container " id="chartButton-container1">
+            <div class="chart-container" id="chart1" style="height: 600px; width: 800px;"></div>
+        </div>
+        <div class="chartButton-container " id="chartButton-container2">
+            <div class="chart-container" id="chart2" style="height: 600px; width: 800px;"></div>
+            <input type="file" id="fileInput1" style="display: none" />
+            <button id="importButton1" style="white-space: nowrap;">导入文件</button>
+
+        </div>
+
+        <!-- Content for Page 1 -->
+    </div>
+
+    <div id="page2" style="display: none;">
+        <div id="taskCompletionChart" style="width: 600px;height:400px;"></div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">姓名</th>
+                    <th scope="col">已完成任务</th>
+                    <th scope="col">总任务数</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="student in students" :key="student.id">
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.completedTasks }}</td>
+                    <td>{{ student.totalTasks }}</td>
+                    <td>
+                        <button class="btn btn-primary" @click="editStudent(student.id)" data-bs-toggle="modal"
+                            data-bs-target="#editStudentModal">编辑</button>
+                        <button class="btn btn-secondary" @click="viewStudent(student.id)" data-bs-toggle="modal"
+                            data-bs-target="#studentModal">查看</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="modal fade" id="studentModal" tabindex="-1" aria-labelledby="studentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="studentModalLabel">学生详情</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>姓名：{{ currentStudent.name }}</p>
+                        <p>已完成任务：{{ currentStudent.completedTasks }}</p>
+                        <p>总任务数：{{ currentStudent.totalTasks }}</p>
+                        <img :src="currentStudent.image" alt="学生图片" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog"
+            aria-labelledby="editStudentModalLabel" aria-hidden="true" data-bs-backdrop="static"
+            data-bs-keyboard="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editStudentModalLabel">编辑学生信息</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>姓名：{{ currentStudent.name }}</p>
+                        <p>
+                            已完成任务：
+                            <input type="number" v-model="currentStudent.completedTasks" />
+                        </p>
+                        <p>
+                            总任务数：
+                            <input type="number" v-model="currentStudent.totalTasks" />
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @click="saveStudent"
+                            data-bs-dismiss="modal">保存</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page3" style="display: none;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="app">
+                        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                <button v-for="(url, index) in imgUrls" :key="index" type="button"
+                                    :data-bs-target="'#carouselExampleIndicators'" :data-bs-slide-to="index"
+                                    :class="{ 'active': index === 0 }"></button>
+                            </div>
+                            <div class="carousel-inner">
+                                <div v-for="(url, index) in imgUrls" :key="index" class="carousel-item"
+                                    :class="{ 'active': index === 0 }">
+                                    <img :src="url" class="d-block w-100">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div id="adManager" style="position: relative;">
+                        <input type="file" ref="fileInput" style="display: none;" @change="uploadFile">
+                        <button class="btn btn-primary" style="position: absolute; left:360px; top: 0"
+                            @click="addAd">增加广告</button>
+                        <table class="table table-striped table-hover"
+                            style="max-height: 500px; overflow-y: auto; display: block;">
+                            <thead>
+                                <tr>
+                                    <th scope="col">缩略图</th>
+                                    <th scope="col">显示时间</th>
+                                    <th scope="col">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(ad, index) in ads" :key="index">
+                                    <td><img :src="ad.imgUrl" class="img-thumbnail" style="width: 100px;"></td>
+                                    <td>{{ ad.displayTime }}</td>
+                                    <td><button class="btn btn-secondary" @click="editAd(index)">删除</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- 柱状图 -->
+                    <div id="barChart" style="width: 100%; height: 400px;"></div>
+                </div>
+                <div class="col-md-6">
+                    <!-- 饼图 -->
+                    <div id="pieChart" style="width: 100%; height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page4" style="display: none;">
+        <div class="container-fluid">
+            <div class="row">
+
+                <div class="col-md-6">
+                    <!-- 柱状图 -->
+                    <div id="missionChart" style="width: 100%; height: 400px;"></div>
+                </div>
+                <div class="col-md-6">
+                    <!-- 饼图 -->
+                    <div id="registrationChart" style="width: 100%; height: 400px;"></div>
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div id="adDisplayer" style="position: relative;">
+                            <table class="table table-striped table-hover"
+                                style="max-height: 500px; overflow-y: auto; display: block;">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">广告名称</th>
+                                        <th scope="col">点击次数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(ad, index) in ads" :key="index">
+                                        <td>{{ ad.name }}</td>
+                                        <td>{{ ad.touchTime }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <!-- 饼图 -->
+                        <div id="collegeChart" style="width: 100%; height: 400px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>//回到顶部的js
+        // 获取回到顶部按钮
+        var backToTopButton = document.querySelector('#backToTop');
+
+        // 监听滚动事件
+        window.addEventListener('scroll', function () {
+            // 如果页面向下滚动了 100px，就显示回到顶部按钮，否则隐藏
+            if (window.pageYOffset > 10) {
+                backToTopButton.style.display = 'block';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        // 为回到顶部按钮添加点击事件监听器
+        backToTopButton.addEventListener('click', function () {
+            // 使用平滑滚动回到页面顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+    <script>//切换页面的js和page1的js
+
+
+
+        function toggleActive(pageNumber) {
+            // 清除所有的按钮的active类
+            var buttons = document.getElementsByClassName("btn");
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
+            }
+            // 给点击的按钮加上active类
+            buttons[pageNumber - 1].classList.add("active");
+            // 调用showDiv函数，切换显示的页面
+            showDiv(pageNumber);
+        }
+        function showDiv(pageNumber) {
+            document.getElementById("page1").style.display = "none";
+            document.getElementById("page2").style.display = "none";
+            document.getElementById("page3").style.display = "none";
+            document.getElementById("page4").style.display = "none";
+            document.getElementById("page" + pageNumber).style.display = "block";
+        }
+
+        window.onload = function () {
+            // 创建第一个图表
+            var myChart = echarts.init(document.getElementById('chart1'));
+
+            var data = {
+                series: [120, 200, 150, 80, 70, 110] // 已注册、任务1、任务2、任务3、任务4、任务5的人数
+            };
+            var option = {
+                title: {
+                    text: '学生注册及完成任务情况'
+                },
+                tooltip: {},
+                legend: {
+                    data: ['人数']
+                },
+                xAxis: {
+                    data: ['已注册', '任务1', '任务2', '任务3', '任务4', '任务5']
+                },
+                yAxis: {},
+                series: [
+                    {
+                        name: '人数',
+                        type: 'bar',
+                        data: data.series // 使用硬编码的数据
+                    }
+                ]
+            };
+
+            myChart.setOption(option);
+
+            // 创建第二个图表
+            var chart = echarts.init(document.getElementById('chart2'));
+
+            var provinceData = [
+                { "name": "广东", "value": 10430 },
+                { "name": "江苏", "value": 4910 },
+                // ...其他省份数据
+            ];
+            // 地图配置项
+            var option = {
+                title: {
+                    text: '学生生源地',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                visualMap: {
+                    min: 0,
+                    max: 500,
+                    left: 'left',
+                    top: 'bottom',
+                    text: ['High', 'Low'], // 图例的文字
+                    calculable: true
+                },
+                series: [
+                    {
+                        name: '人数',
+                        type: 'map',
+                        mapType: 'china',
+                        roam: false, // 禁止地图拖动和缩放
+                        label: {
+                            show: true
+                        },
+                        data: provinceData
+                    }
+                ]
+            };
+
+            // 设置地图配置项并渲染地图
+            chart.setOption(option);
+        };
+        /* // 创建第一个图表
+        var myChart = echarts.init(document.getElementById('chart1'));
+
+        // 从后端获取数据
+        axios.get('http://localhost:3000/api/import1').then(function (response) {
+            var data = response.data;
+            
+            var option = {
+                title: {
+                    text: '学生注册及完成任务情况'
+                },
+                tooltip: {},
+                legend: {
+                    data: ['人数']
+                },
+                xAxis: {
+                    data: ['已注册', '任务1', '任务2', '任务3', '任务4', '任务5']
+                },
+                yAxis: {},
+                series: [
+                    {
+                        name: '人数',
+                        type: 'bar',
+                        data: data.series // 假设后端返回的数据中包含 series 属性
+                    }
+                ]
+            };
+
+            myChart.setOption(option);
+        });
+
+        // 创建第二个图表
+        var chart = echarts.init(document.getElementById('chart2'));
+
+        // 从后端获取数据
+        axios.get('http://localhost:3000/api/import2').then(function (response) {
+            var provinceData = response.data; // 假设后端返回的数据就是省份数据
+            
+            // 地图配置项
+            var option = {
+                title: {
+                    text: '学生生源地',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                visualMap: {
+                    min: 0,
+                    max: 500,
+                    left: 'left',
+                    top: 'bottom',
+                    text: ['High', 'Low'], // 图例的文字
+                    calculable: true
+                },
+                series: [
+                    {
+                        name: '人数',
+                        type: 'map',
+                        mapType: 'china',
+                        roam: false, // 禁止地图拖动和缩放
+                        label: {
+                            show: true
+                        },
+                        data: provinceData
+                    }
+                ]
+            };
+
+            // 设置地图配置项并渲染地图
+            chart.setOption(option);
+        });
+    }; */
+
+        // 为 importButton1 添加点击事件监听器
+        document.querySelector('#importButton1').addEventListener('click', function () {
+            // 触发 fileInput1 的点击事件
+            document.querySelector('#fileInput1').click();
+        });
+
+
+
+        // 监听文件输入元素的 change 事件，获取用户选择的文件，并使用 axios 发送到后端
+        document.querySelector('#fileInput1').addEventListener('change', function (e) {
+            var file = e.target.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            axios({
+                url: 'http://localhost:3000/api/import1', // 修改为第一个按钮对应的后端接口
+                method: 'post',
+                data: formData
+            }).then(function () {
+                // 文件上传成功后，重新获取数据并更新图表
+                axios.get('http://localhost:3000/api/import1').then(function (response) {
+                    var data = response.data;
+                    var option = {
+                        xAxis: {
+                            data: ['已注册', '任务1', '任务2', '任务3', '任务4', '任务5']
+                        },
+                        series: [
+                            {
+                                data: data.series
+                            }
+                        ]
+                    };
+                    myChart.setOption(option);
+                });
+            });
+        });
+
+
+
+
+    </script>
+    <script>//page2的js
+        var button = document.getElementById('showPage2Button');
+
+        button.addEventListener('click', function () {
+            var page2 = document.getElementById('page2');
+            page2.style.display = 'block';
+
+
+
+
+            new Vue({
+                el: '#page2',
+                data: {
+                    students: [
+                        { id: 1, name: '张三', completedTasks: 5564856464864648, totalTasks: 1048648646486468 },
+                        { id: 2, name: '李四', completedTasks: 7, totalTasks: 10 },
+                        { id: 3, name: '王五', completedTasks: 6, totalTasks: 10 }
+                    ],
+                    currentStudent: {}
+                },
+                methods: {
+                    editStudent(id) {
+                        // 获取学生数据
+                        axios.get('http://localhost:3000/api/students/' + id)
+                            .then(response => {
+                                this.currentStudent = response.data;
+                                // 打开模态框
+                                $('#editStudentModal').modal('show');
+                            });
+                    },
+                    viewStudent(id) {
+                        // 获取学生数据
+                        axios.get('http://localhost:3000/api/students/' + id)
+                            .then(response => {
+                                this.currentStudent = response.data;
+                                this.currentStudent.image = response.data.image;//处理图片
+                            });
+                    },
+                    saveStudent() {
+                        // 保存学生数据并发送到后端
+                        axios.put('http://localhost:3000/api/students/' + this.currentStudent.id, this.currentStudent)
+                            .then(() => {
+                                console.log('Student data updated');
+                                // 关闭编辑模态框
+                                $('#editStudentModal').modal('hide');
+                            });
+                    },
+                    generateChart() {
+                        // 计算完成了任务数量在 0-5，6-10，11-15 的人数
+                        let taskCounts = [10, 5, 1];
+                        for (let student of this.students) {
+                            if (student.completedTasks <= 5) {
+                                taskCounts[0]++;
+                            } else if (student.completedTasks <= 10) {
+                                taskCounts[1]++;
+                            } else if (student.completedTasks <= 15) {
+                                taskCounts[2]++;
+                            }
+                        }
+
+                        // 基于准备好的dom，初始化echarts实例
+                        var myChart = echarts.init(document.getElementById('taskCompletionChart'));
+
+                        // 指定图表的配置项和数据
+                        var option = {
+                            title: {
+                                text: '完成任务数量'
+                            },
+                            tooltip: {},
+                            legend: {
+                                data: ['人数']
+                            },
+                            xAxis: {
+                                data: ["0-5", "6-10", "11-15"]
+                            },
+                            yAxis: {},
+                            series: [{
+                                name: '人数',
+                                type: 'bar',
+                                data: taskCounts
+                            }]
+                        };//完成任务情况的可视化
+
+                        // 使用刚指定的配置项和数据显示图表。
+                        myChart.setOption(option);
+                        myChart.resize();
+                        console.log('generateChart is called');
+                    }
+
+                },
+                /* created() {
+                    // 获取学生数据
+                    axios.get('http://localhost:3000/api/students')
+                        .then(response => {
+                            this.students = response.data;
+                            this.generateChart();
+                            this.resize();
+                        });
+                } */
+                created() {
+                    this.students = [
+                        { id: 1, name: '张三', completedTasks: 55465464565645, totalTasks: 104564564564856 },
+                        { id: 2, name: '李四', completedTasks: 7, totalTasks: 10 },
+                        { id: 3, name: '王五', completedTasks: 6, totalTasks: 10 }
+                    ];
+                    this.generateChart();
+                    this.resize();
+                }
+            });
+            function generateChart() {
+                // 计算完成了任务数量在 0-5，6-10，11-15 的人数
+                let taskCounts = [0, 0, 0];
+                for (let student of this.students) {
+                    if (student.completedTasks <= 5) {
+                        taskCounts[0]++;
+                    } else if (student.completedTasks <= 10) {
+                        taskCounts[1]++;
+                    } else if (student.completedTasks <= 15) {
+                        taskCounts[2]++;
+                    }
+                }
+
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('taskCompletionChart'));
+
+                // 指定图表的配置项和数据
+                var option = {
+                    title: {
+                        text: '完成任务数量'
+                    },
+                    tooltip: {},
+                    legend: {
+                        data: ['人数']
+                    },
+                    xAxis: {
+                        data: ["0-5", "6-10", "11-15"]
+                    },
+                    yAxis: {},
+                    series: [{
+                        name: '人数',
+                        type: 'bar',
+                        data: taskCounts
+                    }]
+                };
+
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option);
+                myChart.resize();
+                console.log('generateChart被调用');
+            }
+        });
+    </script>
+    <script>//page3的js
+        /* var button = document.getElementById('showPage3Button');
+        var barChart = echarts.init(document.getElementById('barChart'));
+        var pieChart = echarts.init(document.getElementById('pieChart'));
+        button.addEventListener('click', function () {
+            // 获取 #page3 元素
+            var page3 = document.getElementById('page3');
+
+            // 显示 #page3 元素
+            page3.style.display = 'block';
+
+            // 获取图表元素
+            var barChart = document.getElementById('barChart');
+            var pieChart = document.getElementById('pieChart');
+
+            // 初始化图表
+            var barChartInstance = echarts.init(barChart);
+            var pieChartInstance = echarts.init(pieChart);
+
+            // 定义图表配置项
+            var barOption = {
+                title: {
+                    text: '广告播放时间'
+                },
+                xAxis: {
+                    data: ["广告1", "广告2", "广告3"]
+                },
+                yAxis: {},
+                series: [{
+                    name: '播放时间',
+                    type: 'bar',
+                    data: [5, 20, 36]
+                }]
+            };
+            var pieOption = {
+                title: {
+                    text: '广告播放时间占比',
+                    subtext: '纯属虚构',
+                    left: 'center'
+                },
+                series: [
+                    {
+                        name: '访问来源',
+                        type: 'pie',
+                        radius: '50%',
+                        data: [
+                            { value: 1048, name: '广告1' },
+                            { value: 735, name: '广告2' },
+                            { value: 580, name: '广告3' }
+                        ]
+                    }
+                ]
+            }; // 配置项内容
+
+
+            // 设置图表选项
+            barChartInstance.setOption(barOption);
+            pieChartInstance.setOption(pieOption);
+            barChartInstance.resize();
+            pieChartInstance.resize();
+        });
+        new Vue({
+            el: '#app',
+            data: {
+                imgUrls: [
+                    'img/signin_background.jpg',
+                    'img/chair.jpg',
+                    'img/man.jpg'
+                ]
+            },
+            mounted() {
+                var myCarousel = document.querySelector('#carouselExampleIndicators')
+                var carousel = new bootstrap.Carousel(myCarousel)
+            } */
+        /* el: '#app',
+        data: {
+            imgUrls: []
+        },
+        async created() {
+            try {
+                const response = await axios.get('your-api-url');
+                this.imgUrls = response.data;
+                this.$nextTick(() => {
+                    var myCarousel = document.querySelector('#carouselExampleIndicators')
+                    var carousel = new bootstrap.Carousel(myCarousel)
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        } */
+        /* })
+        new Vue({
+            el: '#adManager',
+            data: {
+                ads: [
+                    { id: 1, imgUrl: 'img/signin_background.jpg', displayTime: '2022-01-01 00:00:00' },
+                    { id: 2, imgUrl: 'img/chair.jpg', displayTime: '2022-01-02 00:00:00' },
+                    { id: 3, imgUrl: 'img/man.jpg', displayTime: '2022-01-03 00:00:00' }
+                ]
+            },
+            methods: {
+                async addAd() {
+                    this.$refs.fileInput.click();
+                },
+                async uploadFile(event) {
+                    const file = event.target.files[0];
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    try {
+                        await axios.post('your-upload-api-url', formData);
+                        this.getAds();
+                    } catch (error) {
+                        console.error(error);
+                    }
+                },
+                async editAd(index) {
+                    try {
+                        await axios.delete(`your-delete-api-url/${this.ads[index].id}`);
+                        this.getAds();
+                    } catch (error) {
+                        console.error(error);
+                    }
+                },
+                async getAds() {
+                    try {
+                        const response = await axios.get('your-get-ads-api-url');
+                        this.ads = response.data;
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
+            },
+            created() {
+                this.getAds();
+            }
+        }); */
+        var button = document.getElementById('showPage3Button');
+        button.addEventListener('click', function () {
+            // 获取 #page3 元素
+            var page3 = document.getElementById('page3');
+
+            // 显示 #page3 元素
+            page3.style.display = 'block';
+        });
+
+        new Vue({
+            el: '#app',
+            data: {
+                imgUrls: [
+                    'img/signin_background.jpg',
+                    'img/chair.jpg',
+                    'img/man.jpg'
+                ]
+            },
+            mounted() {
+                var myCarousel = document.querySelector('#carouselExampleIndicators')
+                var carousel = new bootstrap.Carousel(myCarousel)
+            }
+        });
+
+        new Vue({
+            el: '#adManager',
+            data: {
+                ads: [
+                    { id: 1, imgUrl: 'img/signin_background.jpg', displayTime: '2022-01-01 00:00:00' },
+                    { id: 2, imgUrl: 'img/chair.jpg', displayTime: '2022-01-02 00:00:00' },
+                    { id: 3, imgUrl: 'img/man.jpg', displayTime: '2022-01-03 00:00:00' }
+                ]
+            },
+            methods: {
+                async addAd() {
+                    this.$refs.fileInput.click();
+                },
+                async uploadFile(event) {
+                    const file = event.target.files[0];
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    try {
+                        await axios.post('your-upload-api-url', formData);
+                        this.getAds();
+                    } catch (error) {
+                        console.error(error);
+                    }
+                },
+                async editAd(index) {
+                    try {
+                        await axios.delete(`your-delete-api-url/${this.ads[index].id}`);
+                        this.getAds();
+                    } catch (error) {
+                        console.error(error);
+                    }
+                },
+                async getAds() {
+                    try {
+                        const response = await axios.get('your-get-ads-api-url');
+                        this.ads = response.data;
+
+                        // 更新 imgUrls 数据
+                        this.imgUrls = this.ads.map(ad => ad.imgUrl);
+
+                        // 更新轮播图
+                        this.updateCarousel();
+                        this.generateChart();
+                    } catch (error) {
+                        console.error(error);
+                    }
+                },
+                updateCarousel() {
+                    var myCarousel = document.querySelector('#carouselExampleIndicators');
+                    var carousel = new bootstrap.Carousel(myCarousel, {
+                        interval: 2000
+                    });
+                },
+                generateChart() {
+                    // 获取图表元素
+                    var barChart = document.getElementById('barChart');
+                    var pieChart = document.getElementById('pieChart');
+
+                    // 初始化图表
+                    var barChartInstance = echarts.init(barChart);
+                    var pieChartInstance = echarts.init(pieChart);
+
+                    // 定义图表配置项
+                    var barOption = {
+                        title: {
+                            text: '广告播放时间'
+                        },
+                        xAxis: {
+                            data: ["广告1", "广告2", "广告3"]
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '播放时间',
+                            type: 'bar',
+                            data: [5, 20, 36]
+                        }]
+                    };
+                    var pieOption = {
+                        title: {
+                            text: '广告播放时间占比',
+                            subtext: '纯属虚构',
+                            left: 'center'
+                        },
+                        series: [
+                            {
+                                name: '访问来源',
+                                type: 'pie',
+                                radius: '50%',
+                                data: [
+                                    { value: 1048, name: '广告1' },
+                                    { value: 735, name: '广告2' },
+                                    { value: 580, name: '广告3' }
+                                ]
+                            }
+                        ]
+                    };
+
+                    // 设置图表选项
+                    barChartInstance.setOption(barOption);
+                    pieChartInstance.setOption(pieOption);
+                    barChartInstance.resize();
+                    pieChartInstance.resize();
+                }
+            },
+            created() {
+                this.getAds();
+            }
+        });
+        var barChart = document.getElementById('barChart');
+        var pieChart = document.getElementById('pieChart');
+
+        // 初始化图表
+        var barChartInstance = echarts.init(barChart);
+        var pieChartInstance = echarts.init(pieChart);
+
+        // 定义图表配置项
+        var barOption = {
+            title: {
+                text: '广告播放时间'
+            },
+            xAxis: {
+                data: ["广告1", "广告2", "广告3"]
+            },
+            yAxis: {},
+            series: [{
+                name: '播放时间',
+                type: 'bar',
+                data: [5, 20, 36]
+            }]
+        };
+        var pieOption = {
+            title: {
+                text: '广告播放时间占比',
+                subtext: '纯属虚构',
+                left: 'center'
+            },
+            series: [
+                {
+                    name: '访问来源',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [
+                        { value: 1048, name: '广告1' },
+                        { value: 735, name: '广告2' },
+                        { value: 580, name: '广告3' }
+                    ]
+                }
+            ]
+        };
+
+        // 设置图表选项
+        barChartInstance.setOption(barOption);
+        pieChartInstance.setOption(pieOption);
+        barChartInstance.resize();
+        pieChartInstance.resize();
+    </script>
+    <script>//page4的js
+        var button = document.getElementById('showPage4Button');
+
+        button.addEventListener('click', function () {
+            var page4 = document.getElementById('page4');
+
+            // 显示 #page4 元素
+            page4.style.display = 'block';
+            var registrationChart = echarts.init(document.getElementById('registrationChart'));
+
+            var option = {
+                title: {
+                    text: '注册情况',
+                    subtext: '未注册 vs 已注册',
+                    left: 'center'
+                },
+                series: [
+                    {
+                        name: '注册情况',
+                        type: 'pie',
+                        radius: '50%',
+                        data: [
+                            { value: 1048, name: '未注册' },
+                            { value: 735, name: '已注册' }
+                        ]
+                    }
+                ]
+            };
+
+            registrationChart.setOption(option);
+            registrationChart.resize();
+            new Vue({
+                el: '#adDisplayer',
+                data: {
+                    ads: [
+                        { name: '广告1', touchTime: 100 },
+                        { name: '广告2', touchTime: 200 },
+                        { name: '广告3', touchTime: 150 },
+                        { name: '广告4', touchTime: 80 },
+                        { name: '广告5', touchTime: 70 }
+                    ]
+                }
+            });
+            /* new Vue({
+                el: '#adDisplayer',
+                data: {
+                    ads: []
+                },
+                methods: {
+                    async getAds() {
+                        try {
+                            const response = await axios.get('your-get-ads-api-url');
+                            this.ads = response.data;
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }
+                },
+                created() {
+                    this.getAds();
+                }
+            }); */
+            var missionChart = echarts.init(document.getElementById('missionChart'));
+
+            var option = {
+                title: {
+                    text: '任务完成人数',
+                    left: 'center'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['任务1', '任务2', '任务3', '任务4', '任务5']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: [120, 200, 150, 80, 70],
+                    type: 'bar'
+                }]
+            };
+
+            missionChart.setOption(option);
+            missionChart.resize();
+            var collegeChart = echarts.init(document.getElementById('collegeChart'));
+            var option = {
+                title: {
+                    text: '各学院人数占比',
+                    left: 'center'
+                },
+                series: [
+                    {
+                        name: '人数',
+                        type: 'pie',
+                        radius: '50%',
+                        data: [
+                            { value: 1048, name: '计算机学院' },
+                            { value: 735, name: '经济管理学院' },
+                            { value: 580, name: '人文学院' },
+                            { value: 484, name: '理学院' },
+                            { value: 300, name: '艺术学院' }
+                        ]
+                    }
+                ]
+            };
+            /* var registrationOption = {
+                title: {
+                    text: '注册情况',
+                    subtext: '未注册 vs 已注册',
+                    left: 'center'
+                },
+                series: [
+                    {
+                        name: '注册情况',
+                        type: 'pie',
+                        radius: '50%',
+                        data: data.registrationData // 使用获取到的数据
+                    }
+                ]
+            };
+
+            var missionOption = {
+                title: {
+                    text: '任务完成人数',
+                    left: 'center'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: data.missionData.categories // 使用获取到的数据
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: data.missionData.values, // 使用获取到的数据
+                    type: 'bar'
+                }]
+            };
+
+            var collegeOption = {
+                title: {
+                    text: '各学院人数占比',
+                    left: 'center'
+                },
+                series: [
+                    {
+                        name: '人数',
+                        type: 'pie',
+                        radius: '50%',
+                        data: data.collegeData // 使用获取到的数据
+                    }
+                ]
+            }; */
+            collegeChart.setOption(option);
+            collegeChart.resize();
+        });
+    </script>
+</body>
+
+</html>

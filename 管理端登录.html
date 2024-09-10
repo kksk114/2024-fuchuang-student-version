@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>signin</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('img/signin_background.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .center-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <button type="button" class="btn btn-primary center-button" id="showModalButton">点击登录</button>
+    <div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">管理员登录</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="basic-url" class="form-label">账号</label>
+                        <input type="text" class="form-control" placeholder="account" aria-label="account"
+                            aria-describedby="basic-addon1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="basic-url" class="form-label">密码</label>
+                        <input type="password" class="form-control" placeholder="passwd" aria-label="passwd"
+                            aria-describedby="basic-addon1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary loginbutton">登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        var myModal = new bootstrap.Modal(document.querySelector('.modal'), {
+            backdrop: 'static',
+            keyboard: false
+        });//创建一个模态框对象
+
+        document.getElementById('showModalButton').addEventListener('click', function () {
+            myModal.show();
+        });//点击按钮显示模态框
+
+        document.querySelector('.loginbutton').addEventListener('click', function (e) {
+            e.preventDefault();
+            axios.post('http://127.0.0.1:4523/m1/4172278-0-default/backend/login', {
+                account: document.querySelector('input[aria-label="account"]').value,
+                passwd: document.querySelector('input[aria-label="passwd"]').value
+            }).then(res => {
+                console.log(res);
+                if (res.data.status === 0) {
+                    alert('密码正确');
+                    window.location.href = '2024服创前端/管理端2.html';
+                } else {
+                    alert('密码错误');
+                }
+            }).catch(err => {
+                console.log(err);
+            });//点击登录按钮发送请求，并判断结果和跳转页面
+        });
+    </script>
+</body>
+
+</html>
